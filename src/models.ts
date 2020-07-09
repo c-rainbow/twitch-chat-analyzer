@@ -18,5 +18,6 @@ export class Video {
 export class Comment {
     comment_id: string;
     video_id: string;
+    created_at: number;  // epoch time
     raw: object;
 }

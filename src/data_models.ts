@@ -52,12 +52,15 @@ JSON representation of a comment, from Twitch API
 export interface CommentData {
     _id: string;
     channel_id: string;
-    commenter: UserData;
+    commenter: CommenterData;
     content_id: string;
     content_offset_seconds: number; // floating point number in seconds
     content_type: string;
     created_at: string;  // Date representation
     message: MessageData;
+    source: string;
+    state: string;
+    updated_at: string;
 }
 
 /*
@@ -144,19 +147,54 @@ JSON representation of a chat message
             "version": "1"
         }
     ],
+    "user_color": "#FF0000",
     "user_notice_params": {}
 }
 */
 export interface MessageData {
     body: string;
-    emoticons?: Array<>;
-    fragments: Array<>;
+    emoticons?: Array<EmoteRangeData>;
+    fragments: Array<FragmentData>;
     is_action: boolean;
-    user_badges?: Array<>;
+    user_badges?: Array<UserBadgeData>;
+    user_color?: string;
+    // This field is ikely populated in case of subscription notice, etc
+    user_notice_params: object;  
 }
 
 /*
-JSON representation of a commenter, from Twitch API
+JSON representation of emote info in chat
+{
+    "_id": "1441281",
+    "begin": 6,
+    "end": 12
+},
+*/
+export interface EmoteRangeData {
+    _id: string;
+    begin: number;  // beginning index in chat, inclusive
+    end: number;  // end index in chat, inclusive
+}
+
+
+/*
+JSON representation of fragment data. "emoticon" is optional
+{
+    "emoticon": {
+        "emoticon_id": "1441281",
+        "emoticon_set_id": ""
+    },
+    "text": "FBCatch"
+}
+
+*/
+export interface FragmentData {
+    emoticon?: {emoticon_id: string, emoticon_set_id: string};
+    text: string;
+}
+
+/*
+JSON representation of a commenter
 {
     "_id": "403883450",
     "bio": null,
@@ -168,7 +206,7 @@ JSON representation of a commenter, from Twitch API
     "updated_at": "2020-07-07T17:18:17.714018Z"
 },
 */
-export interface UserData {
+export interface CommenterData {
     _id: string;
     bio: string;
     created_at: string;
@@ -179,22 +217,15 @@ export interface UserData {
     updated_at: string;
 }
 
-
-export class User {
-    user_id: number;
-    username: string;
-    display_name: string;
-    created_time: Date;
-    
+/*
+JSON representation of user badge
+{
+    "_id": "broadcaster",
+    "version": "1"
+},
+*/
+export interface UserBadgeData {
+    _id: string;
+    version: string;
 }
 
-export class Video {
-
-}
-
-
-export class Comment {
-    comment_id: string;
-    video_id: string;
-    raw: object;
-}
