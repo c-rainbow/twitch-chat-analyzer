@@ -1,0 +1,44 @@
+{
+    "_id": "59d2b1be-2a56-4a23-c315-1a2bd2a03a19",
+    "channel_id": "12345678",
+    "commenter": {
+        "_id": "516570261",
+        "bio": "This is a sample bio",
+        "created_at": "2020-01-01T17:59:37.740769Z",
+        "display_name": "TestUserName",
+        "logo": "https://static-cdn.jtvnw.net/jtv_user_pictures/123a4567-1a23-1234-8cb2-abc1de5842f8-profile_image-300x300.png",
+        "name": "testusername",
+        "type": "user",
+        "updated_at": "2020-06-06T17:59:37.740769Z"
+    },
+    "content_id": "128935229",
+    "content_offset_seconds": 2345.678,
+    "content_type": "video",
+    "created_at": "2020-07-08T13:17:25.153Z",
+    "message": {
+        "body": "testusername's Cheer shared rewards to 25 others in Chat! ",
+        "fragments": [
+            {
+                "text": "testusername's Cheer shared rewards to 25 others in Chat! "
+            }
+        ],
+        "is_action": false,
+        "user_badges": [
+            {
+                "_id": "bits-leader",
+                "version": "1"
+            }
+        ],
+        "user_notice_params": {
+            "msg-id": "rewardgift",
+            "msg-param-domain": "pride_megacommerce_2020",
+            "msg-param-selected-count": "25",
+            "msg-param-total-reward-count": "25",
+            "msg-param-trigger-amount": "1000",
+            "msg-param-trigger-type": "CHEER"
+        }
+    },
+    "source": "chat",
+    "state": "published",
+    "updated_at": "2020-07-08T13:17:25.153Z"
+}

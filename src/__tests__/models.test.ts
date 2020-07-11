@@ -7,6 +7,7 @@ import { CommentData } from "../data_models";
 
 const baseDir = "src/__tests__/data";
 const commentPath = path.resolve(baseDir, "comment.json");
+const commentSimplePath = path.resolve(baseDir, "comment_simple.json");
 
 describe("Model Test", () => {
 
@@ -39,6 +40,25 @@ describe("Model Test", () => {
         expect(user.displayName).toStrictEqual("TestUserName");
         expect(user.createdTime).toStrictEqual(1577901577.740);
         expect(user.type).toStrictEqual("user");
+    });
+
+    // Test when the chat has no emote and chatter has no badge, etc.
+    test("Simplest chat test", () => {
+        const data = fs.readFileSync(commentSimplePath, "utf8");
+        const commentData = JSON.parse(data) as CommentData;
+        const comment = Comment.parseComment(commentData);
+        
+        // Primitive field values
+        expect(comment.id).toStrictEqual("59d2b1be-2a56-4a23-c315-1a2bd2a03a19");
+        expect(comment.channel).toStrictEqual(12345678);
+        expect(comment.relativeTime).toStrictEqual(2345.678);
+        expect(comment.absoluteTime).toStrictEqual(1594214245.153);
+        expect(comment.rawText).toStrictEqual("Hello");
+        // Fragments
+        expect(comment.fragments.length).toStrictEqual(1);
+        expect(comment.fragments[0].text).toStrictEqual("Hello");
+        // Empty emotes. Its value should be empty array, not null nor undefined.
+        expect(comment.emotes).toStrictEqual([]);
     });
 
 });

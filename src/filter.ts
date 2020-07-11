@@ -8,8 +8,8 @@ export type Field = CommentField | UserField | StringField;
 export type FieldValueType = string | number;
 
 type CommentFieldKey = CommentFieldNumberKey | CommentFieldStringKey;
-type CommentFieldNumberKey = "channel";
-type CommentFieldStringKey = "id";
+type CommentFieldNumberKey = "channel" | "relativeTime" | "absoluteTime";
+type CommentFieldStringKey = "id" | "rawText";
 
 export interface CommentField {
     type: "comment";
@@ -17,8 +17,8 @@ export interface CommentField {
 }
 
 type UserFieldKey = UserFieldNumberKey | UserFieldStringKey;
-type UserFieldNumberKey = "id";
-type UserFieldStringKey = "username" | "displayName" ;
+type UserFieldNumberKey = "id" | "createdTime";
+type UserFieldStringKey = "username" | "displayName" | "type";
 
 export interface UserField {
     type: "user";
@@ -37,7 +37,7 @@ export interface UserStringField {
     key: UserFieldStringKey;
 }
 
-// Type checks with field keys
+// Static type checks with field keys
 {
     // CommentFieldKey must be subtype of "keyof Comment"
     const c : keyof Comment = <CommentFieldKey>null;
@@ -55,7 +55,7 @@ export interface UserStringField {
 }
 
 
-enum Operators {
+export enum Operators {
     LessThan,
     LessThanOrEqualTo,
     GreaterThan,
@@ -73,11 +73,12 @@ export abstract class Filter {
 
     // Whether to use NOT to the entire evaluation
     // ex) (A and (B or C) and D).not() = ~ (A and (B or C) and D)
-    not() {
+    not() : Filter {
         this.negated = !this.negated;
+        return this;
     }
 
-    abstract eval(comment: Comment, user?: User) : boolean;
+    abstract eval(comment: Comment) : boolean;
 }
 
 
@@ -121,15 +122,15 @@ export abstract class ExpressionGroup extends Filter {
         return this;
     }
 
-    eval(comment: Comment, user?: User) : boolean {
+    eval(comment: Comment) : boolean {
         if(this.filters.length == 0) {
             throw new Error("Filter is empty");
         }
-        return this.evalInternal(comment, user);
+        return this.evalInternal(comment);
     }
 
     // To be implemented by AndExpressionGroup and OrExpressionGroup
-    protected evalInternal(comment: Comment, user?: User) : boolean {
+    protected evalInternal(comment: Comment) : boolean {
         throw new Error("Not implemented");
     };
 }
@@ -137,9 +138,9 @@ export abstract class ExpressionGroup extends Filter {
 
 // higher-level filter where subfilters are grouped by OR condition
 export class OrExpressionGroup extends ExpressionGroup {
-    protected evalInternal(comment: Comment, user?: User) : boolean {
+    protected evalInternal(comment: Comment) : boolean {
         for(let filter of this.filters) {
-            let evaluated = filter.eval(comment, user);
+            let evaluated = filter.eval(comment);
             if(this.negated) {
                 evaluated = !evaluated;
             }
@@ -154,9 +155,9 @@ export class OrExpressionGroup extends ExpressionGroup {
 
 // higher-level filter where subfilters are grouped by AND condition
 export class AndExpressionGroup extends ExpressionGroup {
-    protected evalInternal(comment: Comment, user?: User) : boolean {
+    protected evalInternal(comment: Comment) : boolean {
         for(let filter of this.filters) {
-            let evaluated = filter.eval(comment, user);
+            let evaluated = filter.eval(comment);
             if(this.negated) {
                 evaluated = !evaluated;
             }
@@ -192,8 +193,8 @@ export class ComparisonExpression extends Filter {
         this.value = value;
     }
 
-    eval(comment: Comment, user?: User) : boolean {
-        const fieldValue = this.getFieldValue(comment, user);
+    eval(comment: Comment) : boolean {
+        const fieldValue = this.getFieldValue(comment);
         switch(this.op) {
             case Operators.LessThan:
                 return fieldValue < this.value;
@@ -208,13 +209,13 @@ export class ComparisonExpression extends Filter {
         }
     }
 
-    getFieldValue(comment: Comment, user?: User): FieldValueType {
+    getFieldValue(comment: Comment): FieldValueType {
         const field = this.field;
         switch(field.type) {
             case "comment":
                 return getProperty(comment, field.key);
             case "user":
-                return getProperty(user, field.key);
+                return getProperty(comment.user, field.key);
         }
     }
 }
@@ -231,8 +232,8 @@ export class RegexExpression extends Filter {
         this.regex = new RegExp(regex, flags);
     }
 
-    eval(comment: Comment, user?: User) : boolean { 
-        const fieldValue = this.getFieldValue(comment, user);
+    eval(comment: Comment) : boolean { 
+        const fieldValue = this.getFieldValue(comment);
         const tested = this.regex.test(fieldValue);
         if(this.negated) {
             return !tested;
@@ -240,13 +241,13 @@ export class RegexExpression extends Filter {
         return tested;
     }
 
-    getFieldValue(comment: Comment, user?: User): string {
+    getFieldValue(comment: Comment): string {
         const field = this.field;
         switch(field.type) {
             case "comment":
                 return getProperty(comment, field.key);
             case "user":
-                return getProperty(user, field.key);
+                return getProperty(comment.user, field.key);
         }
     }
 }
