@@ -5,10 +5,11 @@ import { User, Comment } from "./models";
 
 // Discriminated union of comment and user field names
 export type Field = CommentField | UserField | StringField;
+export type FieldValueType = string | number;
 
 type CommentFieldKey = CommentFieldNumberKey | CommentFieldStringKey;
-type CommentFieldNumberKey = "user_id";
-type CommentFieldStringKey = "_id";
+type CommentFieldNumberKey = "channel";
+type CommentFieldStringKey = "id";
 
 export interface CommentField {
     type: "comment";
@@ -16,8 +17,8 @@ export interface CommentField {
 }
 
 type UserFieldKey = UserFieldNumberKey | UserFieldStringKey;
-type UserFieldNumberKey = "_id";
-type UserFieldStringKey = "username" | "display_name" ;
+type UserFieldNumberKey = "id";
+type UserFieldStringKey = "username" | "displayName" ;
 
 export interface UserField {
     type: "user";
@@ -35,7 +36,6 @@ export interface UserStringField {
     type: "user";
     key: UserFieldStringKey;
 }
-
 
 // Type checks with field keys
 {
@@ -89,23 +89,23 @@ export abstract class ExpressionGroup extends Filter {
         this.filters = [];
     }
 
-    addLessThan(field: Field, value: number) : ExpressionGroup {
+    addLessThan(field: Field, value: FieldValueType) : ExpressionGroup {
         return this.addExpression(field, Operators.LessThan, value);
     }
 
-    addLessThanOrEqualTo(field: Field, value: number) : ExpressionGroup {
+    addLessThanOrEqualTo(field: Field, value: FieldValueType) : ExpressionGroup {
         return this.addExpression(field, Operators.LessThanOrEqualTo, value);
     }
 
-    addGreaterThan(field: Field, value: number) : ExpressionGroup{
+    addGreaterThan(field: Field, value: FieldValueType) : ExpressionGroup{
         return this.addExpression(field, Operators.GreaterThan, value);
     }
 
-    addGreaterThanOrEqualTo(field: Field, value: number) : ExpressionGroup {
+    addGreaterThanOrEqualTo(field: Field, value: FieldValueType) : ExpressionGroup {
         return this.addExpression(field, Operators.GreaterThanOrEqualTo, value);
     }
 
-    addEqual(field: Field, value: number) : ExpressionGroup {
+    addEqual(field: Field, value: FieldValueType) : ExpressionGroup {
         return this.addExpression(field, Operators.Equal, value);
     }
 
@@ -115,7 +115,7 @@ export abstract class ExpressionGroup extends Filter {
         return this;
     }
 
-    addExpression(field: Field, op: Operators, value: number) : ExpressionGroup {
+    addExpression(field: Field, op: Operators, value: FieldValueType) : ExpressionGroup {
         const exp = new ComparisonExpression(field, op, value);
         this.filters.push(exp);
         return this;
@@ -183,9 +183,9 @@ export class AndExpressionGroup extends ExpressionGroup {
 export class ComparisonExpression extends Filter {
     readonly field: Field;
     readonly op: Operators;
-    readonly value: number | string;
+    readonly value: FieldValueType;
 
-    constructor(field: Field, op: Operators, value: number | string) {
+    constructor(field: Field, op: Operators, value: FieldValueType) {
         super();
         this.field = field;
         this.op = op;
@@ -208,7 +208,7 @@ export class ComparisonExpression extends Filter {
         }
     }
 
-    getFieldValue(comment: Comment, user?: User): string | number {
+    getFieldValue(comment: Comment, user?: User): FieldValueType {
         const field = this.field;
         switch(field.type) {
             case "comment":
@@ -252,7 +252,7 @@ export class RegexExpression extends Filter {
 }
 
 
-// TypeScript way of getting a property value
+// TypeScript way of getting a property value. Returns null if obj is null or undefined
 function getProperty<T, K extends keyof T>(obj: T, key: K) {
-    return obj[key];
+    return obj?.[key];
 }

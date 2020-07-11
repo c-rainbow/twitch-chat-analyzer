@@ -29,6 +29,7 @@
   },
   "jest": {
     "verbose": true,
+    "collectCoverage": true,
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     }
