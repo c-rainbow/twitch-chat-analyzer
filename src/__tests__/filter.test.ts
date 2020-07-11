@@ -1,4 +1,4 @@
-import { CommentField, Operators, AndExpressionGroup, RegexExpression, ComparisonExpression, CommentStringField, UserField } from "../filter"
+import { CommentField, Operators, AndExpressionGroup, RegexExpression, ComparisonExpression, CommentStringField, UserField, OrExpressionGroup } from "../filter"
 import * as path from "path";
 import * as fs from "fs"; 
 import { Comment } from "../models";
@@ -109,8 +109,16 @@ describe("ComparisonExpression test", () => {
     });
 });
 
-describe("OrExpressionGroup test", () => {
+describe("RegexExpression test", () => {
 
+});
+
+
+describe("OrExpressionGroup test", () => {
+    test("Both expressions are true", () => {
+        const group = new OrExpressionGroup();
+        group.addEqual({type: "user", key: "displayName"}, 3);
+    });
 });
 
 describe("AndExpressionGroup test", () => {

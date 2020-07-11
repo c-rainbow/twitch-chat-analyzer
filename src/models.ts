@@ -1,4 +1,5 @@
 import { FragmentData, EmoteRangeData, CommenterData, CommentData } from "./data_models";
+import { toTimeString } from "./timeutil";
 
 
 export class User {
@@ -30,6 +31,11 @@ export class Comment {
     fragments: Array<FragmentData>;
     emotes: Array<EmoteRangeData>;
     user: User;
+
+    toDisplayString() : string {
+        const timeStr = toTimeString(this.relativeTime);
+        return `[${timeStr}] (${this.user.displayName}): ${this.rawText}`;
+    }
 
     static parseComment(data: CommentData) : Comment {
         const comment = new Comment();
