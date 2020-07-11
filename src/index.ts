@@ -3,7 +3,7 @@
 //import TwitchClient from "twitch";
 import { User, Video, Comment } from "./models";
 import { CommentData, CommenterData } from "./data_models";
-import { Filter } from "./filter";
+import { ExpressionGroup } from "./filter";
 
 
 //function read(jsonObject: object)
@@ -50,7 +50,7 @@ export class CommentRepository {
         return null;
     }
 
-    filter(ft: Filter) : Array<Comment> {
+    filter(ft: ExpressionGroup) : Array<Comment> {
         return this.commentList.filter((comment) => ft.eval(comment));
     }
 }

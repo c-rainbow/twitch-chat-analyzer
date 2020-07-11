@@ -3,56 +3,122 @@
 import { User, Comment } from "./models";
 
 
-export enum Operators {
+// Discriminated union of comment and user field names
+export type Field = CommentField | UserField | StringField;
+
+type CommentFieldKey = CommentFieldNumberKey | CommentFieldStringKey;
+type CommentFieldNumberKey = "user_id";
+type CommentFieldStringKey = "_id";
+
+export interface CommentField {
+    type: "comment";
+    key: CommentFieldKey;
+}
+
+type UserFieldKey = UserFieldNumberKey | UserFieldStringKey;
+type UserFieldNumberKey = "_id";
+type UserFieldStringKey = "username" | "display_name" ;
+
+export interface UserField {
+    type: "user";
+    key: UserFieldKey;
+}
+
+type StringField = CommentStringField | UserStringField;
+
+export interface CommentStringField {
+    type: "comment";
+    key: CommentFieldStringKey;
+}
+
+export interface UserStringField {
+    type: "user";
+    key: UserFieldStringKey;
+}
+
+
+// Type checks with field keys
+{
+    // CommentFieldKey must be subtype of "keyof Comment"
+    const c : keyof Comment = <CommentFieldKey>null;
+    // Property value from key CommentFieldStringKey must be string
+    const cs : string = getProperty(<Comment>null, <CommentFieldStringKey>null);
+    // Property value from key CommentFieldNumberKey must be number
+    const cn : number = getProperty(<Comment>null, <CommentFieldNumberKey>null);
+
+    // UserFieldKey must be subtype of "keyof User"
+    const u : keyof User = <UserFieldKey>null;
+    // Property value from key UserFieldStringKey must be string
+    const us : string = getProperty(<User>null, <UserFieldStringKey>null);
+    // Property value from key UserFieldNumberKey must be number
+    const un : number = getProperty(<User>null, <UserFieldNumberKey>null);
+}
+
+
+enum Operators {
     LessThan,
     LessThanOrEqualTo,
     GreaterThan,
     GreaterThanOrEqualTo,
     Equal,
-    Like,
 }
 
-type CommentKey = keyof Comment;
-type UserKey = keyof User;
 
-
+// Filter types
 export abstract class Filter {
-    readonly filters: Array<Filter>;
     negated: boolean;
-
     constructor() {
-        this.filters = [];
         this.negated = false;
-    }
-
-    addLessThan(field: string, value: number) : Filter {
-        return this.addExpression(field, Operators.LessThan, value);
-    }
-
-    addLessThanOrEqualTo(field: string, value: number) : Filter {
-        return this.addExpression(field, Operators.LessThanOrEqualTo, value);
-    }
-
-    addGreaterThan(field: string, value: number) : Filter{
-        return this.addExpression(field, Operators.GreaterThan, value);
-    }
-
-    addGreaterThanOrEqualTo(field: string, value: number) : Filter {
-        return this.addExpression(field, Operators.GreaterThanOrEqualTo, value);
-    }
-
-    addEqual(field: string, value: number) : Filter {
-        return this.addExpression(field, Operators.Equal, value);
-    }
-
-    addLike(field: string, regex: string) : Filter {
-        return this.addExpression(field, Operators.Like, regex);
     }
 
     // Whether to use NOT to the entire evaluation
     // ex) (A and (B or C) and D).not() = ~ (A and (B or C) and D)
     not() {
         this.negated = !this.negated;
+    }
+
+    abstract eval(comment: Comment, user?: User) : boolean;
+}
+
+
+export abstract class ExpressionGroup extends Filter {
+    readonly filters: Array<Filter>;
+
+    constructor() {
+        super();
+        this.filters = [];
+    }
+
+    addLessThan(field: Field, value: number) : ExpressionGroup {
+        return this.addExpression(field, Operators.LessThan, value);
+    }
+
+    addLessThanOrEqualTo(field: Field, value: number) : ExpressionGroup {
+        return this.addExpression(field, Operators.LessThanOrEqualTo, value);
+    }
+
+    addGreaterThan(field: Field, value: number) : ExpressionGroup{
+        return this.addExpression(field, Operators.GreaterThan, value);
+    }
+
+    addGreaterThanOrEqualTo(field: Field, value: number) : ExpressionGroup {
+        return this.addExpression(field, Operators.GreaterThanOrEqualTo, value);
+    }
+
+    addEqual(field: Field, value: number) : ExpressionGroup {
+        return this.addExpression(field, Operators.Equal, value);
+    }
+
+    addRegex(field: StringField, regex: string, flag?: string) : ExpressionGroup {
+        const exp = new RegexExpression(field, regex, flag);
+        this.filters.push(exp);
+        return this;
+    }
+
+    addExpression(field: Field, op: Operators, value: number) : ExpressionGroup {
+        const exp = new ComparisonExpression(field, op, value);
+        this.filters.push(exp);
+        return this;
     }
 
     eval(comment: Comment, user?: User) : boolean {
@@ -62,32 +128,68 @@ export abstract class Filter {
         return this.evalInternal(comment, user);
     }
 
-    addExpression(field: string, op: Operators, value: string | number) : Filter {
-        const exp = new Expression(field, op, value);
-        this.filters.push(exp);
-        return this;
-    }
-
-    // To be implemented by AndFilter and OrFilter
+    // To be implemented by AndExpressionGroup and OrExpressionGroup
     protected evalInternal(comment: Comment, user?: User) : boolean {
         throw new Error("Not implemented");
     };
 }
 
-export class Expression extends Filter {
-    readonly field: string;
-    readonly op: Operators;
-    readonly value: string | number;
-    readonly regex?: RegExp;
 
-    constructor(field: string, op: Operators, value: string | number) {
+// higher-level filter where subfilters are grouped by OR condition
+export class OrExpressionGroup extends ExpressionGroup {
+    protected evalInternal(comment: Comment, user?: User) : boolean {
+        for(let filter of this.filters) {
+            let evaluated = filter.eval(comment, user);
+            if(this.negated) {
+                evaluated = !evaluated;
+            }
+            if(evaluated) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+// higher-level filter where subfilters are grouped by AND condition
+export class AndExpressionGroup extends ExpressionGroup {
+    protected evalInternal(comment: Comment, user?: User) : boolean {
+        for(let filter of this.filters) {
+            let evaluated = filter.eval(comment, user);
+            if(this.negated) {
+                evaluated = !evaluated;
+            }
+            if(!evaluated) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+
+/**
+ * Expression to compare field value to a user-provided value
+ * ex) comment.length < 100
+ * 
+ * TypeScript cannot check in compile time if the field and the user-provided value
+ * have the same type. It is the responsibility of users not to pass the value of a 
+ * different type. For example,
+ * 
+ *     comment.length < "100"   shouldn't be used (although works in reality)
+ *     comment.length < 100     should be used
+ */
+export class ComparisonExpression extends Filter {
+    readonly field: Field;
+    readonly op: Operators;
+    readonly value: number | string;
+
+    constructor(field: Field, op: Operators, value: number | string) {
         super();
         this.field = field;
         this.op = op;
         this.value = value;
-        if(op == Operators.Like) {
-            this.regex = new RegExp(value as string, "i");
-        }
     }
 
     eval(comment: Comment, user?: User) : boolean {
@@ -103,42 +205,54 @@ export class Expression extends Filter {
                 return fieldValue >= this.value;
             case Operators.Equal:
                 return fieldValue === this.value;
-            case Operators.Like:
-                return this.regex.test(fieldValue as string);
         }
     }
 
-    getFieldValue(comment: Comment, user: User): string | number {
-        return null;
+    getFieldValue(comment: Comment, user?: User): string | number {
+        const field = this.field;
+        switch(field.type) {
+            case "comment":
+                return getProperty(comment, field.key);
+            case "user":
+                return getProperty(user, field.key);
+        }
     }
 }
 
-export class OrFilter extends Filter {
-    protected evalInternal(comment: Comment, user?: User) : boolean {
-        for(let filter of this.filters) {
-            let evaluated = filter.eval(comment, user);
-            if(this.negated) {
-                evaluated = !evaluated;
-            }
-            if(evaluated) {
-                return true;
-            }
+
+// String regex expression of field value
+export class RegexExpression extends Filter {
+    readonly field: StringField;
+    readonly regex: RegExp;
+
+    constructor(field: StringField, regex: string, flags = "i") {
+        super();
+        this.field = field;
+        this.regex = new RegExp(regex, flags);
+    }
+
+    eval(comment: Comment, user?: User) : boolean { 
+        const fieldValue = this.getFieldValue(comment, user);
+        const tested = this.regex.test(fieldValue);
+        if(this.negated) {
+            return !tested;
         }
-        return false;
+        return tested;
+    }
+
+    getFieldValue(comment: Comment, user?: User): string {
+        const field = this.field;
+        switch(field.type) {
+            case "comment":
+                return getProperty(comment, field.key);
+            case "user":
+                return getProperty(user, field.key);
+        }
     }
 }
 
-export class AndFilter extends Filter {
-    protected evalInternal(comment: Comment, user?: User) : boolean {
-        for(let filter of this.filters) {
-            let evaluated = filter.eval(comment, user);
-            if(this.negated) {
-                evaluated = !evaluated;
-            }
-            if(!evaluated) {
-                return false;
-            }
-        }
-        return true;
-    }
+
+// TypeScript way of getting a property value
+function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    return obj[key];
 }
