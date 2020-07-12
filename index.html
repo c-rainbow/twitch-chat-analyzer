@@ -3,16 +3,18 @@
   
 <head> 
     <title>Read Text File</title> 
+    <script type="module" src="dist/combined.js"></script>
 </head> 
   
 <body> 
-    <input type="file" name="inputfile"
-            id="inputfile"> 
+    <input type="file" name="inputfile" id="inputfile"> 
     <br> 
    
     <pre id="output"></pre> 
       
     <script type="text/javascript"> 
+
+        import {CommentRepository} from "dist/combined.js";
         document.getElementById('inputfile') 
             .addEventListener('change', function() { 
               
@@ -20,10 +22,14 @@
             fr.onload=function(){ 
 				const start = new Date().getTime();
 				const content = JSON.parse(fr.result.normalize());
-				const end = new Date().getTime();
+                const end = new Date().getTime();
                 document.getElementById('output') 
                         .textContent="" + (end - start);//fr.result.normalize(); 
-				
+                
+                const commentsData = content["comments"];
+                const repository = new CommentRepository(commentsData);
+                console.log("Repository has " + repository.userCount() + " users");
+                console.log("Repository has " + repository.commentCount() + " comments");
             } 
               
             fr.readAsText(this.files[0]); 
