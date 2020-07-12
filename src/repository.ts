@@ -27,6 +27,14 @@ export class CommentRepository {
         this.commentList.push(comment);
     }
 
+    userCount() : number {
+        return this.userMap.size;
+    }
+
+    commentCount() : number {
+        return this.commentList.length;
+    }
+
     filter(ft: Filter) : Array<Comment> {
         return this.commentList.filter((comment) => ft.eval(comment));
     }

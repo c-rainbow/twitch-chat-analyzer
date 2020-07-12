@@ -3,6 +3,7 @@ const path = require('path');
 module.exports = {
   entry: ['./src/index.ts'],
   //devtool: 'inline-source-map',
+  target: "node",
   output: {
     filename: 'combined.js',
     path: path.resolve(__dirname, 'dist'),
@@ -21,5 +22,5 @@ module.exports = {
   },
   optimization: {
       minimize: false
-  }
+  },
 };
