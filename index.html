@@ -3,7 +3,7 @@
   
 <head> 
     <title>Read Text File</title> 
-    <script type="module" src="dist/combined.js"></script>
+    <script type="text/javascript" src="/dist/combined.js"></script>
 </head> 
   
 <body> 
@@ -12,9 +12,10 @@
    
     <pre id="output"></pre> 
       
-    <script type="text/javascript"> 
-
-        import {CommentRepository} from "dist/combined.js";
+    <script type="module"> 
+		//let rrrr = repository;
+        //import {CommentRepository} from "/combined.js";
+		//CommentRepository = require("/combined.js");
         document.getElementById('inputfile') 
             .addEventListener('change', function() { 
               
@@ -27,9 +28,9 @@
                         .textContent="" + (end - start);//fr.result.normalize(); 
                 
                 const commentsData = content["comments"];
-                const repository = new CommentRepository(commentsData);
-                console.log("Repository has " + repository.userCount() + " users");
-                console.log("Repository has " + repository.commentCount() + " comments");
+                const repo = new repository.CommentRepository(commentsData);
+                console.log("Repository has " + repo.userCount() + " users");
+                console.log("Repository has " + repo.commentCount() + " comments");
             } 
               
             fr.readAsText(this.files[0]); 
