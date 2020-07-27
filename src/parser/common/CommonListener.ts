@@ -4,13 +4,12 @@
 import { ParseTreeListener } from "antlr4ts/tree/ParseTreeListener";
 
 import { NestedExpressionContext } from "./CommonParser";
+import { NotExpressionContext } from "./CommonParser";
 import { AndExpressionGroupContext } from "./CommonParser";
 import { OrExpressionGroupContext } from "./CommonParser";
-import { NotExpressionContext } from "./CommonParser";
 import { LeafExpressionContext } from "./CommonParser";
 import { FilterContext } from "./CommonParser";
 import { ExpressionContext } from "./CommonParser";
-import { Leaf_expressionContext } from "./CommonParser";
 
 
 /**
@@ -30,6 +29,19 @@ export interface CommonListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitNestedExpression?: (ctx: NestedExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `NotExpression`
+	 * labeled alternative in `CommonParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	enterNotExpression?: (ctx: NotExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `NotExpression`
+	 * labeled alternative in `CommonParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	exitNotExpression?: (ctx: NotExpressionContext) => void;
 
 	/**
 	 * Enter a parse tree produced by the `AndExpressionGroup`
@@ -56,19 +68,6 @@ export interface CommonListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitOrExpressionGroup?: (ctx: OrExpressionGroupContext) => void;
-
-	/**
-	 * Enter a parse tree produced by the `NotExpression`
-	 * labeled alternative in `CommonParser.expression`.
-	 * @param ctx the parse tree
-	 */
-	enterNotExpression?: (ctx: NotExpressionContext) => void;
-	/**
-	 * Exit a parse tree produced by the `NotExpression`
-	 * labeled alternative in `CommonParser.expression`.
-	 * @param ctx the parse tree
-	 */
-	exitNotExpression?: (ctx: NotExpressionContext) => void;
 
 	/**
 	 * Enter a parse tree produced by the `LeafExpression`
@@ -104,16 +103,5 @@ export interface CommonListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitExpression?: (ctx: ExpressionContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `CommonParser.leaf_expression`.
-	 * @param ctx the parse tree
-	 */
-	enterLeaf_expression?: (ctx: Leaf_expressionContext) => void;
-	/**
-	 * Exit a parse tree produced by `CommonParser.leaf_expression`.
-	 * @param ctx the parse tree
-	 */
-	exitLeaf_expression?: (ctx: Leaf_expressionContext) => void;
 }
 

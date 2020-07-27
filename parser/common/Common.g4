@@ -7,15 +7,15 @@ expression
   : LPAREN expression RPAREN  # NestedExpression
 
   // Container-level filter expressions
+  | NOT expression  # NotExpression
   | expression AND expression  # AndExpressionGroup
   | expression OR expression  # OrExpressionGroup
-  | NOT expression  # NotExpression
 
   // Leaf-level filter expressions
-  | leaf_expression  # LeafExpression
+  | WORD+  # LeafExpression
 ;
 
-leaf_expression : WORD+; 
+//leaf_expression : WORD+; 
 
 WS : [ \t\r\n]+ -> skip;
 

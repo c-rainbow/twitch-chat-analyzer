@@ -216,7 +216,11 @@ export class SimpleExpression extends Filter {
     }
 
     toString() : string {
-        return this.words.join(" ");
+        const wordsStr = "(" + this.words.join(" ") + ")";
+        if(this.negated) {
+            return "!" + wordsStr;
+        }
+        return wordsStr;
     }
 }
 

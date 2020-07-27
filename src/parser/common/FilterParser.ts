@@ -2,7 +2,7 @@
 import { CommonTokenStream, CharStreams } from 'antlr4ts';
 import { AbstractParseTreeVisitor } from 'antlr4ts/tree/AbstractParseTreeVisitor'
 import { CommonLexer } from './CommonLexer';
-import { CommonParser, NestedExpressionContext, FilterContext, AndExpressionGroupContext, OrExpressionGroupContext, NotExpressionContext, ExpressionContext, Leaf_expressionContext, LeafExpressionContext } from './CommonParser';
+import { CommonParser, NestedExpressionContext, FilterContext, AndExpressionGroupContext, OrExpressionGroupContext, NotExpressionContext, ExpressionContext, LeafExpressionContext } from './CommonParser';
 import { Filter, AndExpressionGroup, OrExpressionGroup, SimpleExpression } from '../../filter';
 import { CommonVisitor } from './CommonVisitor';
 
@@ -10,7 +10,7 @@ export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements C
 
     protected defaultResult(): Filter {
         //throw new Error("Method not implemented.");
-        return null;
+        return new SimpleExpression([]);
     }
 
     visitFilter(ctx: FilterContext) : Filter {
@@ -20,7 +20,7 @@ export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements C
 
     visitNestedExpression(ctx: NestedExpressionContext) : Filter {
         const nestedFilter = this.visit(ctx.expression());
-        return null;
+        return nestedFilter;
     }
 
     visitAndExpressionGroup (ctx: AndExpressionGroupContext) : Filter {
@@ -47,11 +47,11 @@ export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements C
         return filter;
     }
 
-    visitExpression(ctx: ExpressionContext) : Filter {
+    /*visitExpression(ctx: ExpressionContext) : Filter {
         throw new Error("Method visitExpression is not implemented.");
-    }
+    }*/
 
-    visitLeaf_expression(ctx: Leaf_expressionContext) {
+    visitLeafExpression(ctx: LeafExpressionContext) {
         const wordNodes = ctx.WORD();
         const words = wordNodes.map((node) => node.toString());
         return new SimpleExpression(words);
@@ -68,7 +68,7 @@ export function getFilter(inputString: string) : Filter {
     const parser = new CommonParser(tokenStream);
 
     // Parse the input
-    let tree = parser.filter();
+    let tree = parser.expression();
     const filter = new FilterVisitor().visit(tree);
     console.log("filter : " + filter);
     return filter;

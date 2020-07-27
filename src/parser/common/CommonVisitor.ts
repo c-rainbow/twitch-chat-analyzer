@@ -4,13 +4,12 @@
 import { ParseTreeVisitor } from "antlr4ts/tree/ParseTreeVisitor";
 
 import { NestedExpressionContext } from "./CommonParser";
+import { NotExpressionContext } from "./CommonParser";
 import { AndExpressionGroupContext } from "./CommonParser";
 import { OrExpressionGroupContext } from "./CommonParser";
-import { NotExpressionContext } from "./CommonParser";
 import { LeafExpressionContext } from "./CommonParser";
 import { FilterContext } from "./CommonParser";
 import { ExpressionContext } from "./CommonParser";
-import { Leaf_expressionContext } from "./CommonParser";
 
 
 /**
@@ -30,6 +29,14 @@ export interface CommonVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitNestedExpression?: (ctx: NestedExpressionContext) => Result;
 
 	/**
+	 * Visit a parse tree produced by the `NotExpression`
+	 * labeled alternative in `CommonParser.expression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitNotExpression?: (ctx: NotExpressionContext) => Result;
+
+	/**
 	 * Visit a parse tree produced by the `AndExpressionGroup`
 	 * labeled alternative in `CommonParser.expression`.
 	 * @param ctx the parse tree
@@ -44,14 +51,6 @@ export interface CommonVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitOrExpressionGroup?: (ctx: OrExpressionGroupContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by the `NotExpression`
-	 * labeled alternative in `CommonParser.expression`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitNotExpression?: (ctx: NotExpressionContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by the `LeafExpression`
@@ -74,12 +73,5 @@ export interface CommonVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitExpression?: (ctx: ExpressionContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `CommonParser.leaf_expression`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitLeaf_expression?: (ctx: Leaf_expressionContext) => Result;
 }
 
