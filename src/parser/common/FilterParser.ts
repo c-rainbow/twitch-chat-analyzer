@@ -9,13 +9,7 @@ import { CommonVisitor } from './CommonVisitor';
 export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements CommonVisitor<Filter> {
 
     protected defaultResult(): Filter {
-        //throw new Error("Method not implemented.");
-        return new SimpleExpression([]);
-    }
-
-    visitFilter(ctx: FilterContext) : Filter {
-        const filter = this.visit(ctx.expression());
-        return filter;
+        throw new Error("defaultResult is not implemented.");
     }
 
     visitNestedExpression(ctx: NestedExpressionContext) : Filter {
@@ -27,7 +21,15 @@ export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements C
         const group = new AndExpressionGroup();
         const exps = ctx.expression();
         for(let exp of exps) {
-            group.addFilter(this.visit(exp));
+            const subfilter = this.visit(exp);
+            if(subfilter instanceof AndExpressionGroup && !subfilter.negated) {
+                for(let f of subfilter.filters) {
+                    group.addFilter(f);
+                }
+            }
+            else {
+                group.addFilter(subfilter);
+            }
         }
         return group;
     }
@@ -36,7 +38,15 @@ export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements C
         const group = new OrExpressionGroup();
         const exps = ctx.expression();
         for(let exp of exps) {
-            group.addFilter(this.visit(exp));
+            const subfilter = this.visit(exp);
+            if(subfilter instanceof OrExpressionGroup && !subfilter.negated) {
+                for(let f of subfilter.filters) {
+                    group.addFilter(f);
+                }
+            }
+            else {
+                group.addFilter(subfilter);
+            }
         }
         return group;
     }
@@ -47,10 +57,6 @@ export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements C
         return filter;
     }
 
-    /*visitExpression(ctx: ExpressionContext) : Filter {
-        throw new Error("Method visitExpression is not implemented.");
-    }*/
-
     visitLeafExpression(ctx: LeafExpressionContext) {
         const wordNodes = ctx.WORD();
         const words = wordNodes.map((node) => node.toString());
@@ -59,9 +65,7 @@ export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements C
 }
 
 export function getFilter(inputString: string) : Filter {
-    // Create the lexer and parser
-    // const inputString = "text";
-    
+    // Create the lexer and parser    
     const inputStream = CharStreams.fromString(inputString);
     const lexer = new CommonLexer(inputStream);
     const tokenStream = new CommonTokenStream(lexer);
@@ -70,6 +74,5 @@ export function getFilter(inputString: string) : Filter {
     // Parse the input
     let tree = parser.expression();
     const filter = new FilterVisitor().visit(tree);
-    console.log("filter : " + filter);
     return filter;
 }

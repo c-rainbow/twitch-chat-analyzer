@@ -1,0 +1,32 @@
+import { getFilter } from '../FilterParser';
+import { AndExpressionGroup, OrExpressionGroup, SimpleExpression } from '../../../filter';
+
+
+
+describe("Parser test", () => {
+    test("Leaf node test", () => {
+        
+    });
+
+    test("AND/OR expression group test", () => {
+        const f1 = getFilter("hello world & bye world") as AndExpressionGroup;
+        
+        expect(f1.filters.length).toBe(2);
+        const subf1 = f1.filters[0] as SimpleExpression;
+        const subf2 = f1.filters[1] as SimpleExpression;
+        expect(subf1.words).toStrictEqual(["hello", "world"]);
+        expect(subf2.words).toStrictEqual(["bye", "world"]);
+    });
+
+    test("NOT expression test", () => {
+
+    });
+
+    test("More complicated expression group test", () => {
+
+    });
+
+    test("Unicode test", () => {
+
+    });
+});

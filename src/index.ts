@@ -13,7 +13,7 @@ function main() {
 
     //const input = "random filter name & Follow 1day | subscriber & aaaaa & (Bbbb)";
     //const input = "!(랜덤한 필터 이름) & 팔로우 1일 이하 | 비구독자 & 그냥 이것저것 & (아무거나 이것저것)";
-    const input = "!(랜덤한 필터 이름) | 팔로우 1일 이하 & 비구독자 & 그냥 이것저것 | 아무거나 이것저것";
+    const input = "!(랜덤한 필터 이름) | 팔로우 1일 이하| (비구독자 |!그냥 이것저것) & 아무거나 이것저것";
     const f = getFilter(input);
     console.log("f: " + f);
     console.log("type f: " + Object.keys(f));
