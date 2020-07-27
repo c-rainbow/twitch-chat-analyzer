@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# ANTLR4 generated files
+parser/**/*.java
+parser/**/*.class
+parser/**/*.interp
+parser/**/*.tokens

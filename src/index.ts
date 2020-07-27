@@ -5,10 +5,20 @@ import { CommentData } from './data_models';
 import { CommentRepository } from './repository';
 import { RegexExpression, AndExpressionGroup, OrExpressionGroup } from './filter';
 import { performance } from "perf_hooks";
+import { getFilter } from './parser/common/FilterParser';
 
 const filePath = "C:/Code/chatlogs/extra_large.json";
 
 function main() {
+
+    const input = "(random filter name & (Follow 1day | subscriber)) | aaaaa & (Bbbb)";
+    const f = getFilter(input);
+    console.log("f: " + f);
+    console.log("type f: " + Object.keys(f));
+    console.log("toString: " + f.toString());
+
+    return;
+
     const beforeFile = performance.now();
     const fileContent = fs.readFileSync(filePath, "utf8");
     const fileJson = JSON.parse(fileContent);
@@ -18,10 +28,10 @@ function main() {
     console.log("User count: " + repository.userCount());
     console.log("Chat count: " + repository.commentCount());
     
-    const group = new OrExpressionGroup();
-    group.addRegex({type: "user", key: "username"}, "a");
+    const group = new AndExpressionGroup();
+    group.addRegex({type: "user", key: "username"}, "c");
     group.addRegex({type: "comment", key: "rawText"}, "heart");
-    group.addGreaterThan({type: "comment", key: "relativeTime"}, 2000);
+    group.addGreaterThan({type: "comment", key: "relativeTime"}, 200);
 
     const beforeFilter = performance.now();
     console.log("Repository created in " + (beforeFilter - beforeFile) + " milliseconds");

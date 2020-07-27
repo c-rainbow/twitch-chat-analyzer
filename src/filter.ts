@@ -79,6 +79,7 @@ export abstract class Filter {
     }
 
     abstract eval(comment: Comment) : boolean;
+    abstract toString() : string;
 }
 
 
@@ -88,6 +89,10 @@ export abstract class ExpressionGroup extends Filter {
     constructor() {
         super();
         this.filters = [];
+    }
+
+    addFilter(filter: Filter) {
+        this.filters.push(filter);
     }
 
     addLessThan(field: Field, value: FieldValueType) : ExpressionGroup {
@@ -150,6 +155,20 @@ export class OrExpressionGroup extends ExpressionGroup {
         }
         return false;
     }
+
+    toString() : string {
+        const tokens = [];
+        if(this.negated) {
+            tokens.push("!");
+        }
+        tokens.push("(");
+        for(let subFilter of this.filters) {
+            tokens.push(subFilter.toString());
+            tokens.push(' | ');
+        }
+        tokens[tokens.length-1] = ")";
+        return tokens.join("");
+    }
 }
 
 
@@ -167,6 +186,38 @@ export class AndExpressionGroup extends ExpressionGroup {
         }
         return true;
     }
+
+    toString() : string {
+        const tokens = [];
+        if(this.negated) {
+            tokens.push("!");
+        }
+        tokens.push("(");
+        for(let subFilter of this.filters) {
+            tokens.push(subFilter.toString());
+            tokens.push(' & ');
+        }
+        tokens[tokens.length-1] = ")";
+        return tokens.join("");
+    }
+}
+
+
+export class SimpleExpression extends Filter {
+    words : string[];
+
+    constructor(words: string[]) {
+        super();
+        this.words = words.slice();
+    }
+
+    eval(comment: Comment): boolean {
+        throw new Error("Method not implemented.");
+    }
+
+    toString() : string {
+        return this.words.join(" ");
+    }
 }
 
 
@@ -182,6 +233,9 @@ export class AndExpressionGroup extends ExpressionGroup {
  *     comment.length < 100     should be used
  */
 export class ComparisonExpression extends Filter {
+    toString(): string {
+        throw new Error("Method not implemented.");
+    }
     readonly field: Field;
     readonly op: Operators;
     readonly value: FieldValueType;
@@ -223,6 +277,9 @@ export class ComparisonExpression extends Filter {
 
 // String regex expression of field value
 export class RegexExpression extends Filter {
+    toString(): string {
+        throw new Error("Method not implemented.");
+    }
     readonly field: StringField;
     readonly regex: RegExp;
 
