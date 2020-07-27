@@ -26,5 +26,6 @@ OR : '|';
 NOT : '!';
 
 WORD : 
-  ~([ \t\r\n] | '&' | '|' | '!')+
-;//  | ([\u0000-\uFFFF\u{10000}-\u{10FFFF}])+; 
+  // Any character except whitespaces and control characters
+  ~([ \t\r\n] | '(' | ')' | '&' | '|' | '!')+
+;
