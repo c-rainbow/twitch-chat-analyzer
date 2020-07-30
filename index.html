@@ -4,6 +4,19 @@
 <head> 
     <title>Read Text File</title> 
     <script type="text/javascript" src="/dist/combined.js"></script>
+    <script>
+        function applyFilter(formElem) {
+            const val = document.getElementById("filter-text").value;
+            //const val = formElem.value;
+            console.log("Value: " + val);
+            console.log("Type formElem: " + Object.keys(formElem));
+            console.log("0: " + Object.keys(formElem[0]));
+            console.log("1: " + Object.keys(formElem[1]));
+
+            //formElem.preventDefault();
+        }
+
+    </script>
 </head> 
   
 <body> 
@@ -16,6 +29,8 @@
 		//let rrrr = repository;
         //import {CommentRepository} from "/combined.js";
 		//CommentRepository = require("/combined.js");
+
+        var repo = null;
         document.getElementById('inputfile') 
             .addEventListener('change', function() { 
               
@@ -28,7 +43,7 @@
                         .textContent="" + (end - start);//fr.result.normalize(); 
                 
                 const commentsData = content["comments"];
-                const repo = new repository.CommentRepository(commentsData);
+                repo = new repository.CommentRepository(commentsData);
                 console.log("Repository has " + repo.userCount() + " users");
                 console.log("Repository has " + repo.commentCount() + " comments");
             } 
@@ -36,6 +51,11 @@
             fr.readAsText(this.files[0]); 
         }) 
     </script> 
+    <form onsubmit="applyFilter(this)">
+        <input type="text" id="filter-text">
+        <input type="submit" value="Sutmit"> 
+    </form>
+
 </body> 
   
 </html> 
