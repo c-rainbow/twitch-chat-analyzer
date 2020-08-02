@@ -31,8 +31,22 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 var ctx = document.getElementById("myAreaChart");
 var myLineChart = new Chart(ctx, {
   type: 'line',
+  plugins: [{
+    beforeDraw: chart => {
+      const ctx = chart.chart.ctx;
+      const xAxis = chart.scales['x-axis-0'];
+      const yAxis = chart.scales['y-axis-0'];
+      xAxis.ticks.forEach((value, index) =>  {
+        const xCoord = xAxis.getPixelForTick(index);
+        const image = new Image();
+        image.src = "https://i.stack.imgur.com/2RAv2.png";
+        ctx.drawImage(image, xCoord - 12, yAxis.bottom + 10);
+      });
+    }
+  }],
   data: {
-    labels: ["00:00", "00:05", "00:10", "00:15", "00:20", "00:25", "00:30",
+    labels:
+    ["00:00", "00:05", "00:10", "00:15", "00:20", "00:25", "00:30",
              "00:35", "00:40", "00:45", "00:50", "00:55", "01:00"],
     datasets: [{
       label: "",
@@ -70,7 +84,11 @@ var myLineChart = new Chart(ctx, {
           drawBorder: false
         },
         ticks: {
-          maxTicksLimit: 7
+          //display: false,
+          maxTicksLimit: 7,
+          callback: function(value, index, values) {
+            return value;
+          }
         }
       }],
       yAxes: [{
@@ -111,7 +129,7 @@ var myLineChart = new Chart(ctx, {
       callbacks: {
         label: function(tooltipItem, chart) {
           var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-          return number_format(tooltipItem.yLabel) + "개";
+          return number_format(tooltipItem.yLabel) + "2dd개";
         }
       }
     }

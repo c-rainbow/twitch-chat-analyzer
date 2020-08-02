@@ -1,5 +1,7 @@
 import { getFilter } from '../FilterParser';
-import { AndExpressionGroup, OrExpressionGroup, SimpleExpression } from '../../../filter';
+import { AndExpressionGroup } from '../../../filter/expression_group';
+import { DummyExpression } from '../../../filter/leaf_expression';
+
 
 
 
@@ -12,8 +14,8 @@ describe("Parser test", () => {
         const f1 = getFilter("hello world & bye world") as AndExpressionGroup;
         
         expect(f1.filters.length).toBe(2);
-        const subf1 = f1.filters[0] as SimpleExpression;
-        const subf2 = f1.filters[1] as SimpleExpression;
+        const subf1 = f1.filters[0] as DummyExpression;
+        const subf2 = f1.filters[1] as DummyExpression;
         expect(subf1.words).toStrictEqual(["hello", "world"]);
         expect(subf2.words).toStrictEqual(["bye", "world"]);
     });

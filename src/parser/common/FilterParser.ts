@@ -2,11 +2,27 @@
 import { CommonTokenStream, CharStreams } from 'antlr4ts';
 import { AbstractParseTreeVisitor } from 'antlr4ts/tree/AbstractParseTreeVisitor'
 import { CommonLexer } from './CommonLexer';
-import { CommonParser, NestedExpressionContext, FilterContext, AndExpressionGroupContext, OrExpressionGroupContext, NotExpressionContext, ExpressionContext, LeafExpressionContext } from './CommonParser';
-import { Filter, AndExpressionGroup, OrExpressionGroup, SimpleExpression } from '../../filter';
+import {
+    CommonParser, NestedExpressionContext, AndExpressionGroupContext,
+    OrExpressionGroupContext, NotExpressionContext, LeafExpressionContext } from './CommonParser';
+import { Filter } from '../../filter/filter';
 import { CommonVisitor } from './CommonVisitor';
+import { AndExpressionGroup, OrExpressionGroup } from '../../filter/expression_group';
+
+
+export interface LeafExpressionParser {
+    parse(tokens: string[]) : Filter;
+}
+
 
 export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements CommonVisitor<Filter> {
+
+    readonly leafParser : LeafExpressionParser;
+
+    constructor(leafParser: LeafExpressionParser) {
+        super();
+        this.leafParser = leafParser;
+    }
 
     protected defaultResult(): Filter {
         throw new Error("defaultResult is not implemented.");
@@ -57,14 +73,14 @@ export class FilterVisitor extends AbstractParseTreeVisitor<Filter> implements C
         return filter;
     }
 
-    visitLeafExpression(ctx: LeafExpressionContext) {
+    visitLeafExpression(ctx: LeafExpressionContext) : Filter {
         const wordNodes = ctx.WORD();
         const words = wordNodes.map((node) => node.toString());
-        return new SimpleExpression(words);
+        return this.leafParser.parse(words);
     }
 }
 
-export function getFilter(inputString: string) : Filter {
+export function getFilter(inputString: string, leafParser: LeafExpressionParser) : Filter {
     // Create the lexer and parser    
     const inputStream = CharStreams.fromString(inputString);
     const lexer = new CommonLexer(inputStream);
@@ -72,7 +88,7 @@ export function getFilter(inputString: string) : Filter {
     const parser = new CommonParser(tokenStream);
 
     // Parse the input
-    let tree = parser.expression();
-    const filter = new FilterVisitor().visit(tree);
+    const tree = parser.expression();
+    const filter = new FilterVisitor(leafParser).visit(tree);
     return filter;
 }

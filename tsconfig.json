@@ -2,8 +2,8 @@
     "compilerOptions": {
         "sourceMap": true,
         "noImplicitAny": true,
-        "module": "ES6",
-        "target": "ES6",
+        "module": "ES2020",
+        "target": "ES2019",
         "moduleResolution":"node",
         "types": ["jest", "node"],
         "typeRoots": ["node_modules/@types"]

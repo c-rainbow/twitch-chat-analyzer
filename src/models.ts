@@ -1,5 +1,6 @@
-import { FragmentData, EmoteRangeData, CommenterData, CommentData } from "./data_models";
+import { FragmentData, EmoteRangeData, CommenterData, CommentData, UserBadgeData } from "./data_models";
 import { toTimeString } from "./timeutil";
+import { CommentRepository } from "./repository";
 
 
 export class User {
@@ -22,15 +23,41 @@ export class User {
 }
 
 
+export class Emote {
+    id: number;
+    name: string;
+    emoteSetId: string;  // can be empty string
+
+    static parseEmote(data: FragmentData) : Emote {
+        if(!data.emoticon) {
+            return null;
+        }
+        const emoteData = data.emoticon;
+        const emote = new Emote();
+        emote.id = parseInt(emoteData.emoticon_id);
+        emote.name = data.text;
+        emote.emoteSetId = emoteData.emoticon_set_id;
+        return emote;
+    }
+
+    getImageUrl() : string {
+        return `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/1.0`;
+    }
+}
+
+
 export class Comment {
     id: string;
     channel: number;
     relativeTime: number;  // Relative time in seconds from video start
     absoluteTime: number;  // epoch time seconds
-    rawText: string;  // Raw text where all emotes
-    fragments: Array<FragmentData>;
-    emotes: Array<EmoteRangeData>;
+    rawText: string;  // Raw text where all emotes are stored as textx
+    contentText: string;  // Pure text without emotes
     user: User;
+
+    fragments: FragmentData[];
+    emotes: Emote[];  // List of emotes used in the comment
+    badges: UserBadgeData[];
 
     toDisplayString() : string {
         const timeStr = toTimeString(this.relativeTime);
@@ -43,10 +70,26 @@ export class Comment {
         comment.channel = Number(data.channel_id);
         comment.relativeTime = data.content_offset_seconds;
         comment.absoluteTime = new Date(data.created_at).getTime() / 1000.0;
-        comment.rawText = data.message.body;  // Raw text where all emotes
-        comment.fragments = data.message.fragments;
-        comment.emotes = data.message.emoticons || [];
+
+        const message = data.message;
+        comment.rawText = message.body;  // Raw text where all emotes
+        comment.fragments = message.fragments;
         comment.user = User.parseUser(data.commenter);
+        comment.badges = message.user_badges || [];
+
+        comment.emotes = [];
+        const textFragments : string[] = [];
+        for(let fragmentData of message.fragments) {
+            if(fragmentData.emoticon) {  // Emote fragment
+                const emote = Emote.parseEmote(fragmentData);
+                comment.emotes.push(emote);
+            }
+            else {  // Text fragment
+                textFragments.push(fragmentData.text.trim());
+            }
+        }
+        // Reduce all spaces between text fragments to just one space.
+        comment.contentText = textFragments.join(" ");
     
         return comment;
     }

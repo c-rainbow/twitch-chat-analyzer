@@ -3,9 +3,9 @@
 import * as fs from "fs";
 import { CommentData } from './data_models';
 import { CommentRepository } from './repository';
-import { RegexExpression, AndExpressionGroup, OrExpressionGroup } from './filter';
 import { performance } from "perf_hooks";
 import { getFilter } from './parser/common/FilterParser';
+import { AndExpressionGroup } from "./filter/expression_group";
 
 const filePath = "C:/Code/chatlogs/extra_large.json";
 

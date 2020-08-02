@@ -1,8 +1,10 @@
-import { CommentField, Operators, AndExpressionGroup, RegexExpression, ComparisonExpression, CommentStringField, UserField, OrExpressionGroup } from "../filter"
+import { CommentField, Operators, CommentStringField, UserField } from "../filter/filter"
 import * as path from "path";
 import * as fs from "fs"; 
 import { Comment } from "../models";
 import { CommentData } from "../data_models";
+import { OrExpressionGroup } from "../filter/expression_group";
+import { ComparisonExpression } from "../filter/leaf_expression";
 
 const baseDir = "src/__tests__/data";;
 const commentFilePath = path.resolve(baseDir, "comment.json");
