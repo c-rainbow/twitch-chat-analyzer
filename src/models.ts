@@ -72,25 +72,29 @@ export class Comment {
         comment.absoluteTime = new Date(data.created_at).getTime() / 1000.0;
 
         const message = data.message;
-        comment.rawText = message.body;  // Raw text where all emotes
-        comment.fragments = message.fragments;
+        comment.rawText = message.body ?? "";  // Raw text
+        comment.fragments = message.fragments ?? [];
         comment.user = User.parseUser(data.commenter);
         comment.badges = message.user_badges ?? [];
 
+        // Build emotes and text contents
         comment.emotes = [];
         const textFragments : string[] = [];
         comment.contentLength = 0;
-        for(let fragmentData of message.fragments) {
+        for(let fragmentData of comment.fragments) {
             if(fragmentData.emoticon) {  // Emote fragment
                 const emote = Emote.parseEmote(fragmentData);
                 comment.emotes.push(emote);
-                comment.contentLength += 1;
+                comment.contentLength += 1;  // For now, emotes are assumed to have content length 1
             }
             else {  // Text fragment
-                textFragments.push(fragmentData.text.trim());
+                const text = fragmentData.text;
+                textFragments.push(text.trim());
+                comment.contentLength += text.length;
             }
         }
-        // Reduce all spaces between text fragments to just one space.
+        // Reduce all spaces between text fragments to just one space, for ease of search and filter
+        // TODO: Is this the right way?
         comment.contentText = textFragments.join(" ");
     
         return comment;
