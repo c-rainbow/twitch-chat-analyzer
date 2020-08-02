@@ -8,8 +8,8 @@ export type Field = CommentField | UserField | StringField;
 export type FieldValueType = string | number;
 
 type CommentFieldKey = CommentFieldNumberKey | CommentFieldStringKey;
-type CommentFieldNumberKey = "channel" | "relativeTime" | "absoluteTime";
-type CommentFieldStringKey = "id" | "rawText";
+type CommentFieldNumberKey = "channel" | "relativeTime" | "absoluteTime" | "contentLength";
+type CommentFieldStringKey = "id" | "rawText" | "contentText";
 
 export interface CommentField {
     type: "comment";
@@ -61,6 +61,18 @@ export enum Operators {
     GreaterThan = ">",
     GreaterThanOrEqualTo = ">=",
     Equal = "==",
+}
+
+
+export enum TimeUnits {
+    Second = 1,
+    Minute = 60 * Second,
+    Hour = 60 * Minute,
+    Day = 24 * Hour,
+    Week = 7 * Day,
+    // For simplicity, a month has 30 days and a year has 365 days
+    Month = 30 * Day,
+    Year = 365 * Day,
 }
 
 

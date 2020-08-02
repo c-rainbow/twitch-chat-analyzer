@@ -50,11 +50,11 @@ export class Comment {
     id: string;
     channel: number;
     relativeTime: number;  // Relative time in seconds from video start
-    absoluteTime: number;  // epoch time seconds
+    absoluteTime: number;  // epoch time seconds   
     rawText: string;  // Raw text where all emotes are stored as textx
     contentText: string;  // Pure text without emotes
+    contentLength: number  // Length of chat content, where each emote has length 1
     user: User;
-
     fragments: FragmentData[];
     emotes: Emote[];  // List of emotes used in the comment
     badges: UserBadgeData[];
@@ -75,14 +75,16 @@ export class Comment {
         comment.rawText = message.body;  // Raw text where all emotes
         comment.fragments = message.fragments;
         comment.user = User.parseUser(data.commenter);
-        comment.badges = message.user_badges || [];
+        comment.badges = message.user_badges ?? [];
 
         comment.emotes = [];
         const textFragments : string[] = [];
+        comment.contentLength = 0;
         for(let fragmentData of message.fragments) {
             if(fragmentData.emoticon) {  // Emote fragment
                 const emote = Emote.parseEmote(fragmentData);
                 comment.emotes.push(emote);
+                comment.contentLength += 1;
             }
             else {  // Text fragment
                 textFragments.push(fragmentData.text.trim());

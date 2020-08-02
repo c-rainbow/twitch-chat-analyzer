@@ -3,16 +3,34 @@ import { Comment } from "../models";
 import { OrExpressionGroup } from "./expression_group";
 
 
-
 // Filter that checks pattern in both username and displayname
 export class GeneralUsernameExpression extends OrExpressionGroup {
-    constructor(pattern: string) {
+    readonly patterns : string[];
+
+    constructor(tokens: string[]) {
         super();
-        this.addRegex({type:"user", key: "username"}, pattern);
-        this.addRegex({type:"user", key: "displayName"}, pattern);
+        this.patterns = this.getPatterns(tokens);
+        for(let pattern of this.patterns) {
+            this.addRegex({type:"user", key: "username"}, pattern);
+            this.addRegex({type:"user", key: "displayName"}, pattern);
+        }
+    }
+
+    // TODO: For now, the patterns are only space-separated.
+    // Other delimeters like comma should work too.
+    getPatterns(tokens: string[]) : string[] {
+        return tokens;
     }
 }
 
+export class GeneralChatRegexExpression extends OrExpressionGroup {
+    constructor(tokens: string[]) {
+        super();
+        const pattern = tokens.join("\\s+");
+        this.addRegex({type:"comment", key: "rawText"}, pattern);
+        this.addRegex({type:"comment", key: "contentText"}, pattern);
+    }
+}
 
 export class SubscriberExpression extends Filter {
     eval(comment: Comment): boolean {
@@ -117,6 +135,13 @@ export class RegexExpression extends Filter {
             case "user":
                 return getProperty(comment.user, field.key);
         }
+    }
+}
+
+
+export class ChatLengthExpression extends ComparisonExpression {
+    constructor(length: number, op: Operators) { 
+        super({type:"comment", key: "contentLength"}, op, length);
     }
 }
 
