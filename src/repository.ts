@@ -20,7 +20,7 @@ export class UserRepository {
         this.chatCounter = new Counter();
     }
 
-    addChatUser(user: User) {
+    addChatter(user: User) {
         this.userById.set(user.id, user);
         this.chatCounter.increment(user.id);
     }
@@ -36,6 +36,10 @@ export class UserRepository {
             user: this.userById.get(kc.key),
             count: kc.count
         }));
+    }
+
+    getUserCount() : number {
+        return this.userById.size;
     }
 }
 
@@ -79,7 +83,7 @@ export class EmoteRepository {
     }
 
     // Add list of emotes from the same chat
-    addEmotesInChat(emotes: Emote[]) {
+    addChatEmotes(emotes: Emote[]) {
         for(let emote of emotes) {
             this.totalCounter.increment(emote.id);
 
@@ -94,43 +98,34 @@ export class EmoteRepository {
 
 
 export class CommentRepository {
-    readonly userMap: Map<number, User>;
-    readonly userCounter: Counter;
+    readonly userRepository: UserRepository;
     readonly emoteRepository: EmoteRepository;
     readonly commentList: Comment[];
 
-    constructor(commentsData: CommentData[]) {
-        this.userMap = new Map<number, User>();
-        this.userCounter = new Counter();
+    constructor(comments: Comment[]) {
+        this.userRepository = new UserRepository();
         this.emoteRepository = new EmoteRepository();
         this.commentList = [];
 
-        for(let commentData of commentsData) {
-            this.addCommentData(commentData);
+        for(const comment of comments) {
+            this.addComment(comment);
         }
+
         // Just in case the commentList is not sorted by time
         this.commentList.sort(commentCompareFn);
     }
-
-    addCommentData(commentData: CommentData) {
-        const comment = Comment.parseComment(commentData);
-        // Update users
-        const user = comment.user;
-        this.userMap.set(user.id, user);
-        this.userCounter.increment(user.id);
-
-        // Update emotes
-        this.emoteRepository.addEmotesInChat(comment.emotes);
-
-        // update commentList
+ 
+    addComment(comment: Comment) {
+        this.userRepository.addChatter(comment.user);
+        this.emoteRepository.addChatEmotes(comment.emotes);
         this.commentList.push(comment);
     }
 
-    userCount() : number {
-        return this.userMap.size;
+    getUserCount() : number {
+        return this.userRepository.getUserCount();
     }
 
-    commentCount() : number {
+    getCommentCount() : number {
         return this.commentList.length;
     }
 
@@ -138,8 +133,21 @@ export class CommentRepository {
         return this.emoteRepository.getTopEmotes(topCount);
     }
 
+    getTopChatters(topCount = 0) : UserWithCount[] {
+        return this.userRepository.getTopChatters(topCount);
+    }
+
+    getComments() : Comment[] {
+        return this.commentList;
+    }
+
     filter(ft: Filter) : Comment[] {
         return this.commentList.filter((comment) => ft.eval(comment));
+    }
+
+    static fromCommentsData(commentsData: CommentData[]) : CommentRepository {
+        const comments = commentsData.map(Comment.parseComment);
+        return new CommentRepository(comments);
     }
 }
 
@@ -152,7 +160,7 @@ function commentCompareFn(a: Comment, b: Comment) : number {
     if(aTime > bTime) {
         return 1;
     }
-    // If two comments are posted at the same time, compare by id.
+    // If two comments are posted at the same time, compare by id for tie-breaking.
     // Very unlikely because the relative times are in miliseconds
     return a.id.localeCompare(b.id);
 }

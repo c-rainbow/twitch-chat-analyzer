@@ -41,6 +41,7 @@ export class Emote {
     }
 
     getImageUrl() : string {
+        // As of July 2020, this address format is up-to-date
         return `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/1.0`;
     }
 }
