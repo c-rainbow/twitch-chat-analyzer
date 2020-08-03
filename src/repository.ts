@@ -5,7 +5,7 @@ import { Filter } from "./filter/filter";
 import { Counter } from "./counter";
 
 
-interface UserWithCount {
+export interface UserWithCount {
     user: User,
     count: number,
 }
@@ -44,7 +44,7 @@ export class UserRepository {
 }
 
 
-interface EmoteWithCount {
+export interface EmoteWithCount {
     emote: Emote,
     count: number,
 }

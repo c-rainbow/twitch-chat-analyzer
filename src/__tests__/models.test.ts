@@ -20,7 +20,7 @@ describe("Model Test", () => {
         // Primitive field values
         expect(comment.id).toStrictEqual("59d2b1be-2a56-4a23-c315-1a2bd2a03a19");
         expect(comment.channel).toStrictEqual(12345678);
-        expect(comment.relativeTime).toStrictEqual(2345.678);
+        expect(comment.relativeTime).toStrictEqual(2345.678); 
         expect(comment.absoluteTime).toStrictEqual(1594214245.153);
         expect(comment.rawText).toStrictEqual("Hello world :)");
         // Fragments
@@ -30,9 +30,9 @@ describe("Model Test", () => {
         expect(comment.fragments[1].emoticon.emoticon_id).toStrictEqual("1");
         // Emotes
         expect(comment.emotes.length).toStrictEqual(1);
-        expect(comment.emotes[0]._id).toStrictEqual("1");
-        expect(comment.emotes[0].begin).toStrictEqual(12);
-        expect(comment.emotes[0].end).toStrictEqual(13);
+        expect(comment.emotes[0].id).toStrictEqual("1");
+        //expect(comment.emotes[0].begin).toStrictEqual(12);
+        //expect(comment.emotes[0].end).toStrictEqual(13);
         // User
         const user = comment.user;
         expect(user.id).toStrictEqual(516570261);

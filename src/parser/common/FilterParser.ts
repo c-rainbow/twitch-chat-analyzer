@@ -7,7 +7,7 @@ import {
     OrExpressionGroupContext, NotExpressionContext, LeafExpressionContext } from './CommonParser';
 import { Filter } from '../../filter/filter';
 import { CommonVisitor } from './CommonVisitor';
-import { AndExpressionGroup, OrExpressionGroup } from '../../filter/expression_group';
+import { AndExpressionGroup, OrExpressionGroup } from '../../filter/filter';
 
 
 export interface LeafExpressionParser {

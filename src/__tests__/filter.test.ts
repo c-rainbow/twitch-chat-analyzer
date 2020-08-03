@@ -7,7 +7,7 @@ import { OrExpressionGroup } from "../filter/expression_group";
 import { ComparisonExpression } from "../filter/leaf_expression";
 
 const baseDir = "src/__tests__/data";;
-const commentFilePath = path.resolve(baseDir, "comment.json");
+const commentFilePath = path.resolve(baseDir, "comment.json"); 
 
 
 let globalComment : Comment;

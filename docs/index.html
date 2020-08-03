@@ -151,6 +151,7 @@
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mt-4 mb-4">
             <h1 class="h3 mb-0 text-gray-800">대시보드</h1>
+            <input type="file" name="inputfile" id="inputfile"> 
             <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> 다운로드</a>
           </div>
           
@@ -165,10 +166,10 @@
                       <!-- Content Search -->
                       <form class="d-block-inline ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
-                          <input type="text" class="form-control bg-light border-0 small"
+                          <input type="text" id="filter-text-input" class="form-control bg-light border-0 small"
                                 placeholder="필터" aria-label="Search" aria-describedby="basic-addon2">
                           <div class="input-group-append">
-                            <button class="btn btn-primary" type="button">
+                            <button class="btn btn-primary" type="button" id="filter-button">
                               <i class="fas fa-search fa-sm"></i>
                             </button>
                           </div>
@@ -218,7 +219,7 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">채팅 친 사람 수</div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">39</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800 chatter-count-content">39명</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-bread-slice fa-2x text-gray-300"></i>
@@ -235,7 +236,7 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-success text-uppercase mb-1">전체 채팅 수</div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">480</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800 comment-count-content">480개</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -251,8 +252,8 @@
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">평균 채팅 수</div>
-                      <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">분당 5.7개</div>
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">총 비트</div>
+                      <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">491개</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
@@ -268,8 +269,8 @@
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">알아두면 좋은 정보</div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">없음</div>
+                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">구독 알림</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">2명</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -314,7 +315,7 @@
                 <div class="collapse show" id="collapse-chat-count">
                   <div class="card-body">
                     <div class="chart-area">
-                      <canvas id="myAreaChart"></canvas>
+                      <canvas id="top-chatter-chart-canvas"></canvas>
                     </div>
                   </div>
                 </div>
@@ -335,7 +336,7 @@
                 <div class="collapse show" id="collapse-top-chat-count">
                   <div class="card-body">
                     <div class="chart-pie pt-4 pb-2">
-                      <canvas id="myPieChart"></canvas>
+                      <canvas id="top-chatter-chart-canvas"></canvas>
                     </div>
                     <div class="mt-4 text-center small">
                       <span class="mr-2">
@@ -371,7 +372,7 @@
                 </div>
                 <div class="card-body">
                   <div class="chart-bar">
-                    <canvas id="myBarChart"></canvas>
+                    <canvas id="top-emote-chart-canvas"></canvas>
                   </div>
                 </div>
               </div>
@@ -485,9 +486,10 @@
   <script src="vendor/chart.js/Chart.min.js"></script>
 
   <!-- Page level custom scripts -->
-  <script src="js/demo/chart-area-demo.js"></script>
+  <!--<script src="js/demo/chart-area-demo.js"></script>
   <script src="js/demo/chart-bar-demo.js"></script>
-  <script src="js/demo/chart-pie-demo.js"></script>
+  <script src="js/demo/chart-pie-demo.js"></script>-->
+  <script src="../dist/combined.js"></script>
 
 </body>
 

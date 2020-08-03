@@ -2,7 +2,7 @@ import { LeafExpressionParser } from "../common/FilterParser";
 import { Filter } from "../../filter/filter";
 import {
     GeneralUsernameExpression, SubscriberExpression, GeneralChatRegexExpression,
-    ChatLengthExpression } from "../../filter/leaf_expression";
+    ChatLengthExpression } from "../../filter/filter";
 
 
 export class KoreanLeafParser implements LeafExpressionParser {

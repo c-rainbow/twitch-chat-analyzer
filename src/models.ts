@@ -20,6 +20,14 @@ export class User {
     
         return user;
     }
+
+    // Display string of the Twitch user. Same format as in official Twitch chat html
+    getDisplayString() : string {
+        if(this.displayName.toLowerCase() === this.username.toLowerCase()) {
+            return this.displayName;
+        }
+        return `${this.displayName}(${this.username})`;
+    }
 }
 
 
