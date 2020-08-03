@@ -1,9 +1,3 @@
-import { getFilter } from '../FilterParser';
-import { AndExpressionGroup } from '../../../filter/expression_group';
-import { DummyExpression } from '../../../filter/leaf_expression';
-
-
-
 
 describe("Parser test", () => {
     test("Leaf node test", () => {

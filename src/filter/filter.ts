@@ -8,7 +8,7 @@ export type Field = CommentField | UserField | StringField;
 export type FieldValueType = string | number;
 
 type CommentFieldKey = CommentFieldNumberKey | CommentFieldStringKey;
-type CommentFieldNumberKey = "channel" | "relativeTime" | "absoluteTime" | "contentLength";
+type CommentFieldNumberKey = "channel" | "relativeTime" | "absoluteTime" | "contentLength" | "bits";
 type CommentFieldStringKey = "id" | "rawText" | "contentText";
 
 export interface CommentField {
@@ -55,6 +55,12 @@ export interface UserStringField {
 }
 
 
+// TypeScript way of getting a property value. Returns null if obj is null or undefined
+export function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    return obj?.[key];
+}
+
+
 export enum Operators {
     LessThan = "<",
     LessThanOrEqualTo = "<=",
@@ -97,7 +103,6 @@ export abstract class Filter {
     abstract eval(comment: Comment) : boolean;
     abstract toString() : string;
 }
-
 
 
 export abstract class ExpressionGroup extends Filter {
@@ -361,10 +366,20 @@ export class ChatLengthExpression extends ComparisonExpression {
     }
 }
 
-
-
-
-// TypeScript way of getting a property value. Returns null if obj is null or undefined
-export function getProperty<T, K extends keyof T>(obj: T, key: K) {
-    return obj?.[key];
+export class BitExpression extends ComparisonExpression {
+    constructor() { 
+        super({type:"comment", key: "bits"}, Operators.GreaterThan, 0);
+    }
 }
+
+/*
+export class SubscriptionExpression extends Filter {
+    eval(comment: Comment): boolean {
+        comment.
+    }
+    toString(): string {
+        throw new Error("Method not implemented.");
+    }
+    
+}
+*/

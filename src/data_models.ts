@@ -148,10 +148,18 @@ JSON representation of a chat message
         }
     ],
     "user_color": "#FF0000",
-    "user_notice_params": {}
+    "user_notice_params": {
+        "msg-id": "resub",
+        "msg-param-cumulative-months": "6",
+        "msg-param-months": "0",
+        "msg-param-should-share-streak": "0",
+        "msg-param-sub-plan": "1000",
+        "msg-param-sub-plan-name": "Channel Subscription (gongparipa)"
+    }
 }
 */
 export interface MessageData {
+    bits_spent?: number;
     body: string;
     emoticons?: Array<EmoteRangeData>;
     fragments: Array<FragmentData>;
@@ -229,3 +237,20 @@ export interface UserBadgeData {
     version: string;
 }
 
+/*
+"user_notice_params": {
+    "msg-id": "resub",
+    "msg-param-cumulative-months": "6",
+    "msg-param-months": "0",
+    "msg-param-should-share-streak": "0",
+    "msg-param-sub-plan": "1000",
+    "msg-param-sub-plan-name": "Channel Subscription (gongparipa)"
+}
+*/
+export interface UserNoticeParamData {
+    // 'communitypayforward', 'extendsub', 'giftpaidupgrade', 'primepaidupgrade',
+    // 'resub', 'rewardgift', 'standardpayforward', 'sub', 'subgift', 'submysterygift'
+    // submysterygift creates N subgift messages
+    "msg-id"?: string; 
+    "msg-param-cumulative-months"?: string;
+}

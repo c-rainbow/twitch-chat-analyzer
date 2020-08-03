@@ -1,5 +1,5 @@
 import { LeafExpressionParser } from "../common/FilterParser";
-import { Filter } from "../../filter/filter";
+import { Filter, BitExpression } from '../../filter/filter';
 import {
     GeneralUsernameExpression, SubscriberExpression, GeneralChatRegexExpression,
     ChatLengthExpression } from "../../filter/filter";
@@ -20,6 +20,8 @@ export class KoreanLeafParser implements LeafExpressionParser {
                 return new GeneralChatRegexExpression(parameters);
             case "길이":
                 return parseChatLength(parameters);
+            case "비트":
+                return new BitExpression();
         }
         throw new Error(`알 수 없는 명령어입니다: ${command}`);
     }

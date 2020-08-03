@@ -18,6 +18,9 @@ function updateDom() {
   const commentCount = repository.getCommentCount();
   updateCommentCountElem(commentCount);
 
+  const totalBits = repository.getTotalBits();
+  updateTotalBitsElem(totalBits);
+
   const topChatters = repository.getTopChatters(20);
   createTopChattersChart(topChatters);
 
@@ -39,14 +42,24 @@ function updateCommentCountElem(commentCount: number) {
   }
 }
 
+function updateTotalBitsElem(totalBits: number) {
+    const totalBitsElem = document.getElementsByClassName("total-bits-content")?.[0];
+    if(totalBitsElem) {
+        totalBitsElem.textContent = totalBits + "비트";
+    }
+}
+
 function createTopChattersChart(topChatters: UserWithCount[]) {
+  topChatterChart?.destroy();
+  if(!topChatters || topChatters.length == 0) {
+      return;
+  }
 
   const displayStrings = topChatters.map((uc) => uc.user.getDisplayString());
   const counts = topChatters.map((uc) => uc.count);
   const maxCount = counts.reduce((prev, curr) => Math.max(prev, curr));
 
   var canvasElem = document.getElementById("top-chatter-chart-canvas") as HTMLCanvasElement;
-  topChatterChart?.destroy();
   topChatterChart = new Chart(canvasElem, {
       type: 'bar',
       data: {
@@ -128,12 +141,16 @@ function createTopChattersChart(topChatters: UserWithCount[]) {
 
 
 function createTopEmotesChart(topEmotes: EmoteWithCount[]) {
+  topEmoteChart?.destroy();
+  if(!topEmotes || topEmotes.length == 0) {
+      return;
+  }
+  
   const names = topEmotes.map((ec) => ec.emote.name);
   const counts = topEmotes.map((ec) => ec.count);
   const maxCount = counts.reduce((prev, curr) => Math.max(prev, curr));
 
   var canvasElem = document.getElementById("top-emote-chart-canvas") as HTMLCanvasElement;
-  topEmoteChart?.destroy();
   topEmoteChart = new Chart(canvasElem, {
       type: 'bar',
       /*plugins: [{

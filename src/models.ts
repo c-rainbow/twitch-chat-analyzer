@@ -60,6 +60,8 @@ export class Comment {
     channel: number;
     relativeTime: number;  // Relative time in seconds from video start
     absoluteTime: number;  // epoch time seconds   
+    
+    bits: number;
     rawText: string;  // Raw text where all emotes are stored as textx
     contentText: string;  // Pure text without emotes
     contentLength: number  // Length of chat content, where each emote has length 1
@@ -81,6 +83,7 @@ export class Comment {
         comment.absoluteTime = new Date(data.created_at).getTime() / 1000.0;
 
         const message = data.message;
+        comment.bits = message.bits_spent ?? 0;
         comment.rawText = message.body ?? "";  // Raw text
         comment.fragments = message.fragments ?? [];
         comment.user = User.parseUser(data.commenter);

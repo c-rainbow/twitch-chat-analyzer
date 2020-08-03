@@ -141,6 +141,10 @@ export class CommentRepository {
         return this.commentList;
     }
 
+    getTotalBits() : number {
+        return this.commentList.reduce((prev, curr) => prev + curr.bits, 0);
+    }
+
     filter(ft: Filter) : Comment[] {
         return this.commentList.filter((comment) => ft.eval(comment));
     }
