@@ -108,3 +108,8 @@ parser/**/*.java
 parser/**/*.class
 parser/**/*.interp
 parser/**/*.tokens
+
+docs/**/*.scss
+docs/**/*.less
+docs/vendor/
+docs/scss/

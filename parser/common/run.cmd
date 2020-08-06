@@ -1,0 +1,1 @@
+antlr4 Common.g4 && javac -classpath .;C:\Code\Java\antlr-4.8-complete.jar Common*.java

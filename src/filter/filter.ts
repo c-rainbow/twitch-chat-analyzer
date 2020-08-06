@@ -372,6 +372,8 @@ export class BitExpression extends ComparisonExpression {
     }
 }
 
+//export class AccountCreationDateExpression extends 
+
 /*
 export class SubscriptionExpression extends Filter {
     eval(comment: Comment): boolean {

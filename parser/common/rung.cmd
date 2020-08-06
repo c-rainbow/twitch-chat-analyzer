@@ -1,0 +1,1 @@
+run && grun Common filter -gui -encoding cp949
