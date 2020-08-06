@@ -1,8 +1,14 @@
+import TwitchClient from 'twitch';
+//import { StaticAuthProvider } from '@types/twitch-auth';
+
+
 import { CommentRepository, UserWithCount, EmoteWithCount } from './repository';
 import  { Chart }  from "chart.js";
 import { CommentData } from './data_models';
 import { getFilter } from './parser/common/FilterParser';
 import { KoreanLeafParser } from './parser/ko/KoreanLeafParser';
+
+
 
 
 var originalRepository: CommentRepository;
@@ -253,6 +259,27 @@ function createTopEmotesChart(topEmotes: EmoteWithCount[]) {
 }
 
 
+async function getUserInfo() : Promise<string> {
+    const token = sessionStorage.getItem("twitch_chat_analyzer_access_token");
+    if(!token) {
+        return null;
+    }
+
+    const clientId = "59x8jyaudw3pnyi722x3e2x9awh385";
+    //const authProvider = new StaticAuthProvider(clientId, token);
+    //const apiClient = new ApiClient({authProvider});
+    const client = TwitchClient.withCredentials(clientId, token);
+    const user = await client.helix.users.getMe();
+    console.log("username: " + user.name);
+    console.log("user displayname: " + user.displayName);
+    console.log("user email: " + user.email);
+    console.log("user type: " + user.broadcasterType);
+    return user.name;
+}
+
+
+
+
 (function() {
 
 const inputFileElem = document.getElementById('inputfile') as HTMLInputElement;
@@ -287,9 +314,9 @@ document.getElementById("filter-button").addEventListener("click", function() {
   updateDom();
 });
 
+getUserInfo();
 
 })();
-
 
 
 
