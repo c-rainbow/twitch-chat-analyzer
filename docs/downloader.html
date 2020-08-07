@@ -385,20 +385,20 @@
                 <div class="card-body">
                   <form class="d-block-inline my-2 my-md-0 navbar-search">
                     <div class="input-group">
-                      <input type="text" id="filter-text-input" class="form-control bg-light border-0 small"
+                      <input type="text" id="video-id-input" class="form-control bg-light border-0 small"
                             placeholder="다시보기 번호 (예: 123456789)" aria-label="Search" aria-describedby="basic-addon2">
                       <div class="input-group-append">
-                        <button class="btn btn-primary" type="button" id="filter-button">
+                        <button class="btn btn-primary" type="button" id="video-search-button">
                           <i class="fas fa-search fa-sm"></i>
                         </button>
                       </div>
                     </div>
                   </form>
-                  <div class="d-block-inline my-2 my-md-0">
-                    다시보기 정보 들어가는 칸
+                  <div class="d-block-inline my-2 my-md-0" id="video-info">
+                    
                   </div>
                   <div class="d-block-inline my-2 my-md-0">
-                    <button class="btn btn-secondary" type="button" id="download-button">
+                    <button class="btn btn-secondary d-none" type="button" id="video-chat-download-button">
                       다운로드
                     </button>
                   </div>
@@ -416,20 +416,20 @@
                 <div class="card-body">
                   <form class="d-block-inline my-2 my-md-0 navbar-search">
                     <div class="input-group">
-                      <input type="text" id="filter-text-input" class="form-control bg-light border-0 small"
+                      <input type="text" id="streamer-username-input" class="form-control bg-light border-0 small"
                             placeholder="스트리머 아이디(영어)" aria-label="Search" aria-describedby="basic-addon2">
                       <div class="input-group-append">
-                        <button class="btn btn-primary" type="button" id="search-button">
+                        <button class="btn btn-primary" type="button" id="streamer-search-button">
                           <i class="fas fa-search fa-sm"></i>
                         </button>
                       </div>
                     </div>
                   </form>
-                  <div class="d-block-inline my-2 my-md-0">
+                  <div class="d-block-inline my-2 my-md-0" id="streamer-info">
                     스트리머 정보 들어가는 칸
                   </div>
                   <div class="d-block-inline my-2 my-md-0">
-                    <button class="btn btn-secondary" type="button" id="download-button">
+                    <button class="btn btn-secondary d-none" type="button" id="follower-list-download-button">
                       다운로드
                     </button>
                   </div>
@@ -503,7 +503,8 @@
   <!--<script src="js/demo/chart-area-demo.js"></script>
   <script src="js/demo/chart-bar-demo.js"></script>
   <script src="js/demo/chart-pie-demo.js"></script>-->
-  <script src="dist/combined.js"></script>
+  <!--<script src="dist/index.js"></script>-->
+  <script src="./downloader.js"></script>
 
 </body>
 
