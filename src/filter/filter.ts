@@ -62,6 +62,7 @@ export function getProperty<T, K extends keyof T>(obj: T, key: K) {
 
 
 export enum Operators {
+    Invalid = "????",  // null or undefined is not allowed here
     LessThan = "<",
     LessThanOrEqualTo = "<=",
     GreaterThan = ">",

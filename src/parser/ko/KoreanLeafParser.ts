@@ -1,5 +1,5 @@
 import { LeafExpressionParser } from "../common/FilterParser";
-import { Filter, BitExpression } from '../../filter/filter';
+import { Filter, BitExpression, ComparisonExpression, Operators } from '../../filter/filter';
 import {
     GeneralUsernameExpression, SubscriberExpression, GeneralChatRegexExpression,
     ChatLengthExpression } from "../../filter/filter";
@@ -28,5 +28,27 @@ export class KoreanLeafParser implements LeafExpressionParser {
 }
 
 function parseChatLength(parameters: string[]) : ChatLengthExpression {
-    throw new Error("아직 구현되지 않았습니다");
+    const length = Number(parameters?.[0]);
+    const op = getOperator(parameters?.[1]);
+    if(length && op !== Operators.Invalid) {
+        return new ComparisonExpression(
+            {type: "comment", key: "contentLength"}, op, length);
+    }
+    const joined = (parameters ?? []).join(" ");
+    throw new Error(`해석할 수 없는 표현입니다: '${joined}'`);
+}
+
+function getOperator(exp: string) : Operators {
+    switch(exp) {
+        case "초과":
+            return Operators.GreaterThan;
+        case "이상":
+            return Operators.GreaterThanOrEqualTo;
+        case "미만":
+            return Operators.LessThan;
+        case "이하":
+            return Operators.LessThanOrEqualTo;
+        default:
+            return Operators.Invalid;
+    }
 }
