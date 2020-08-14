@@ -76,7 +76,7 @@ function addFollowerDownloaderListeners() {
             console.log(`${followers.length} followers downloaded`);
         }
 
-        const downloader = new FollowerListDownloader(client, Number(user.id), handler);
+        //const downloader = new FollowerListDownloader(client, Number(user.id), handler);
         // Display download status
         // download
         // When finished downloading, download the file to local disk
