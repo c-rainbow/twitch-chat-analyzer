@@ -1,6 +1,5 @@
 import { FragmentData, EmoteRangeData, CommenterData, CommentData, UserBadgeData } from "./data_models";
 import { toTimeString } from "./timeutil";
-import { CommentRepository } from "./repository";
 
 
 export class User {
@@ -63,12 +62,14 @@ export class Comment {
     
     bits: number;
     rawText: string;  // Raw text where all emotes are stored as textx
+    htmlText: string;  // HTML representation of the chat
     contentText: string;  // Pure text without emotes
     contentLength: number  // Length of chat content, where each emote has length 1
     user: User;
     fragments: FragmentData[];
     emotes: Emote[];  // List of emotes used in the comment
     badges: UserBadgeData[];
+    userColor: string;  // Hex code of chat user color
 
     toDisplayString() : string {
         const timeStr = toTimeString(this.relativeTime);
@@ -88,26 +89,32 @@ export class Comment {
         comment.fragments = message.fragments ?? [];
         comment.user = User.parseUser(data.commenter);
         comment.badges = message.user_badges ?? [];
+        comment.userColor = message.user_color;
 
         // Build emotes and text contents
         comment.emotes = [];
         const textFragments : string[] = [];
+        const htmlFragments : string[] = [];
         comment.contentLength = 0;
         for(let fragmentData of comment.fragments) {
             if(fragmentData.emoticon) {  // Emote fragment
                 const emote = Emote.parseEmote(fragmentData);
                 comment.emotes.push(emote);
                 comment.contentLength += 1;  // For now, emotes are assumed to have content length 1
+                // Should this conversion be done in load time or rendering time?
+                htmlFragments.push(`<img src="${emote.getImageUrl()}" />`)
             }
             else {  // Text fragment
                 const text = fragmentData.text;
                 textFragments.push(text.trim());
                 comment.contentLength += text.length;
+                htmlFragments.push(text);
             }
         }
         // Reduce all spaces between text fragments to just one space, for ease of search and filter
         // TODO: Is this the right way?
         comment.contentText = textFragments.join(" ");
+        comment.htmlText = htmlFragments.join("");
     
         return comment;
     }
