@@ -3,6 +3,7 @@ import { User, Comment, Emote } from "./models";
 import { CommentData } from "./data_models";
 import { Filter } from "./filter/filter";
 import { Counter } from "./counter";
+import { groupCountsByTime } from "./timeutil";
 
 
 export interface UserWithCount {
@@ -147,6 +148,15 @@ export class CommentRepository {
 
     filter(ft: Filter) : Comment[] {
         return this.commentList.filter((comment) => ft.eval(comment));
+    }
+
+    // TODO: The current code has a bug that doesn't show empty counts
+    // Between the last chat and till the stream ends. To fix this, we need
+    // a second parameter (max time)
+    getCountsByRelativeTime(timeSize: number) : number[] {
+        const times = this.commentList.map((comment) => comment.relativeTime);
+        const counts = groupCountsByTime(times, timeSize);
+        return counts;
     }
 
     static fromCommentsData(commentsData: CommentData[]) : CommentRepository {
