@@ -1,7 +1,10 @@
 
-
 const defaultClientId = "59x8jyaudw3pnyi722x3e2x9awh385";
 
+const defaultKrakenHeaders = {
+    "Client-ID": "",
+    "Accept": "application/vnd.twitchtv.v5+json",
+}
 
 
 export class ConfigManager {
@@ -16,5 +19,12 @@ export class ConfigManager {
             return this.userClientId;
         }
         return defaultClientId;
+    }
+
+    static getDefaultKrakenHeaders() {
+        return {
+            "Client-ID": this.getClientId(),
+            "Accept": "application/vnd.twitchtv.v5+json",
+        }
     }
 }

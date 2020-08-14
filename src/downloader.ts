@@ -1,12 +1,13 @@
-import TwitchClient, { HelixUser } from 'twitch';
+import TwitchClient, { HelixUser, HelixFollow, HelixVideo } from 'twitch';
 import { ConfigManager } from './config';
-import { ChatDownloader } from './downloader/chat';
+import { ChatDownloader } from './downloader/old_chat_downloader';
+import { FollowerListDownloader } from './downloader/followerlist';
 
 
 let twitchClient : TwitchClient;
 
 function getTwitchClient() : TwitchClient {
-    if(twitchClient !== null) {
+    if(twitchClient !== null && twitchClient !== undefined) {
         return twitchClient;
     }
 
@@ -36,31 +37,63 @@ async function getStreamerInfo(username: string) : Promise<HelixUser> {
     return user;
 }
 
+function updateStreamerInfoElem(streamer: HelixUser) {
+    const streamerInfoElem = document.getElementById("streamer-info");
+    if(!streamer) {
+        streamerInfoElem.textContent = `스트리머를 찾을 수 없습니다: ${name}`;
+        return;
+    }
+    streamerInfoElem.textContent = `스트리머: ${streamer.displayName}`;
+    // Show download button
+    const downloadButtonElem = document.getElementById("follower-list-download-button");
+    downloadButtonElem.classList.remove("d-none");
+}
+
 
 function addFollowerDownloaderListeners() {
-    const streamerNameInputElem = document.getElementById("streamer-username-input") as HTMLInputElement;
-    const streamerSearchButtomElem = document.getElementById("streamer-search-button");
+    const nameInputElem = document.getElementById("streamer-username-input") as HTMLInputElement;
+    const searchButtomElem = document.getElementById("streamer-search-button");
     const streamerInfoElem = document.getElementById("streamer-info");
     const downloadButtonElem = document.getElementById("follower-list-download-button");
     
-    streamerSearchButtomElem.addEventListener("click", async () => {
-        const name = streamerNameInputElem.value;
+    searchButtomElem.addEventListener("click", async () => {
+        const name = nameInputElem.value;
         const client = getTwitchClient();
-        client.helix.users.getUserByName(name).then((helixUser) => {
-            if(!helixUser) {
-                streamerInfoElem.textContent = `스트리머를 찾을 수 없습니다: ${name}`;
-                return;
-            }
-            streamerInfoElem.textContent = `스트리머: ${helixUser.displayName}`;
-            // Show download button
+        client.helix.users.getUserByName(name).then((streamer: HelixUser) => {
+            updateStreamerInfoElem(streamer);
         });
     });
 
     downloadButtonElem.addEventListener("click", async () => {
+        const streamerName = nameInputElem.value;
+        const client = getTwitchClient();
+        const user = await client.helix.users.getUserByName(name);
+        const followers: HelixFollow[] = [];
+        const handler = (followerListPage: HelixFollow[]) => {
+            for(let follower of followerListPage) {
+                followers.push(follower);
+            }
+            console.log(`${followers.length} followers downloaded`);
+        }
+
+        const downloader = new FollowerListDownloader(client, Number(user.id), handler);
         // Display download status
         // download
         // When finished downloading, download the file to local disk
     });
+}
+
+
+function updateVideoInfoElem(video: HelixVideo) {
+    if(!video) {
+        return;
+    }
+    const videoInfoElem = document.getElementById("video-info");
+    videoInfoElem.textContent = video.title + ", " + video.description;
+
+    // Show download button
+    const downloadButtonElem = document.getElementById("video-chat-download-button");
+    downloadButtonElem.classList.remove("d-none");
 }
 
 function addChatDownloaderListeners() {
@@ -74,7 +107,7 @@ function addChatDownloaderListeners() {
         const client = getTwitchClient();
         client.helix.videos.getVideoById(videoId).then((video) => {
             // Populate video info elem
-            videoInfoElem.textContent = video.title + ", " + video.description;
+            updateVideoInfoElem(video);
         });
     });
 
