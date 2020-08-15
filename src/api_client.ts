@@ -2,13 +2,15 @@ import TwitchClient, { HelixUser, HelixFollow, HelixVideo, User } from 'twitch';
 import { ConfigManager } from './config';
 import { ChatDownloader, LoopEventHandler as ChatDownloadHandler } from './downloader/chat_downloader';
 import { LoopEventHandler as FollowerDownloadHandler, FollowerListDownloader } from './downloader/followerlist';
+import { getVideo as getVideoKraken, VideoData } from './downloader/video';
+import { UserData, getUserByName as getUserByNameKraken } from './downloader/user';
 
 
 // Key in session storage to store access token
 const accessTokenKey = "twitch_chat_analyzer_access_token";
 
 
-export default class TwitchApiClient {
+export class TwitchApiClient {
     readonly innerClient : TwitchClient;
     currentUser : User;
     
@@ -33,16 +35,14 @@ export default class TwitchApiClient {
         return downloader;
     }
 
-    async getUser(username: string) : Promise<User> {
-        const user = await this.innerClient.kraken.users.getUserByName(username);
-        //const u2 = await this.innerClient.helix.users.getUserByName(username);
-        //u2.isSubscribedTo
-        return user;
+    static async getUserByName(username: string) : Promise<UserData> {
+        const response = await getUserByNameKraken(username);
+        return response.jsonContent ?? null;
     }
 
-    async getVideo(videoId: string) : Promise<HelixVideo> {
-        const video = await this.innerClient.helix.videos.getVideoById(videoId);
-        return video;
+    static async getVideo(videoId: string) : Promise<VideoData> {
+        const response = await getVideoKraken(videoId);
+        return response.jsonContent ?? null;
     }
 
     async getLoggedInUser() : Promise<User> {
